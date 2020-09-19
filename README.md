@@ -1,4 +1,5 @@
 # Konoha Bot Service
+to Sakura大佬：删了又重新建了一个，由于项目名字一样，所以域名也没有变，还是这个网页（被自己蠢哭）。多谢大佬捉虫
 
 ![Kotlin CI with Gradle](https://github.com/MrWhoami/SDDDBotServices/workflows/Kotlin%20CI%20with%20Gradle/badge.svg?branch=master)
 
