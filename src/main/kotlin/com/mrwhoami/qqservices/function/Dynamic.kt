@@ -21,6 +21,7 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 
+//该功能没有被启用，因为目前需求不大
 //B站订阅的up主动态
 class Dynamic : FunctionListener {
     override suspend fun execute(event: MessageEvent, message: String, image: Image?, face: Face?): Boolean {

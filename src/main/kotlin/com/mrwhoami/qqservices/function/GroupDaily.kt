@@ -9,6 +9,7 @@ import net.mamoe.mirai.message.data.*
 import net.mamoe.mirai.message.data.content
 import java.io.File
 
+//群日报功能，该功能也暂未启用
 class GroupDaily {
     // Logger
     private val logger = KotlinLogging.logger {}

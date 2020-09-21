@@ -5,9 +5,9 @@ import net.dreamlu.mica.http.HttpRequest
 
 
 /**
- * @author pt
- * @email plexpt@gmail.com
- * @date 2020-04-14 16:02
+ * author pt
+ * email plexpt@gmail.com
+ * date 2020-04-14 16:02
  */
 @UtilityClass
 class Homeru {

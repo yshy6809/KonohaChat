@@ -3,6 +3,8 @@ package com.mrwhoami.qqservices.util.plugin
 
 import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
+import java.util.concurrent.TimeoutException
+import kotlin.jvm.Throws
 
 class PluginScheduler(override val coroutineContext: CoroutineContext = GlobalScope.coroutineContext) : CoroutineScope {
 
@@ -50,10 +52,33 @@ class PluginScheduler(override val coroutineContext: CoroutineContext = GlobalSc
     /**
      * 异步执行一个任务, 没有返回
      */
-    fun async(runnable: CoroutineScope) {
+    fun asyncTask(runnable: suspend () -> Any) {
         this.launch {
             withContext(Dispatchers.IO) {
-                runnable
+                runnable.invoke()
+            }
+        }
+    }
+
+    /**
+     * 执行一个任务，若超时执行Action
+     *
+     * @param consumer 执行的任务
+     * @param delayMs 超时时间
+     * @param notCompletedAction 超时动作
+     */
+    @ExperimentalCoroutinesApi
+    @Throws(TimeoutException::class)
+    suspend fun <R> withTimeOut(consumer: suspend () -> R, delayMs: Long, notCompletedAction: suspend () -> Unit) {
+        val result = GlobalScope.async {
+            consumer.invoke()
+        }
+
+        GlobalScope.launch {
+            delay(delayMs)
+            if (!result.isCompleted) {
+                notCompletedAction.invoke()
+                result.cancel()
             }
         }
     }

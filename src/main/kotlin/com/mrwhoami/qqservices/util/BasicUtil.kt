@@ -2,25 +2,17 @@ package com.mrwhoami.qqservices.util
 
 
 import kotlinx.coroutines.*
-//import com.mrwhoami.qqservices.Main
-import com.mrwhoami.qqservices.util.network.NetWorkUtil
+import com.mrwhoami.qqservices.function.BotHelper
 import com.mrwhoami.qqservices.util.plugin.PluginScheduler
-import java.io.File
-import java.io.FileInputStream
-import java.io.IOException
-import java.math.BigInteger
+import me.lovesasuna.lanzou.util.NetWorkUtil
+import java.io.*
 import java.nio.file.Paths
-import java.security.MessageDigest
-import java.security.NoSuchAlgorithmException
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 
-/**
- * @author LovesAsuna
- * @date 2020/4/19 14:05
- */
+
 object BasicUtil {
-    fun ExtraceInt(string: String, defaultValue: Int = 0): Int {
+    fun extractInt(string: String, defaultValue: Int = 0): Int {
         val pattern = Pattern.compile("\\d+")
         val buffer = StringBuffer()
         val matcher = pattern.matcher(string)
@@ -32,25 +24,6 @@ object BasicUtil {
 
     fun <T> replace(message: String, `var`: String, replace: T): String {
         return message.replace(`var`, replace.toString())
-    }
-
-    fun getFileMD5(file: File): String? {
-        return try {
-            val bytes = ByteArray(8192)
-            var len: Int
-            val inputStream = FileInputStream(file)
-            val messageDigest = MessageDigest.getInstance("MD5")
-            while (inputStream.read(bytes).also { len = it } != -1) {
-                messageDigest.update(bytes, 0, len)
-            }
-            inputStream.close()
-            val md5bytes = messageDigest.digest()
-            BigInteger(1, md5bytes).toString(16)
-        } catch (e: IOException) {
-            null
-        } catch (e: NoSuchAlgorithmException) {
-            null
-        }
     }
 
     /**
@@ -72,7 +45,11 @@ object BasicUtil {
     }
 
     fun debug(message: String): String {
-        val reader = NetWorkUtil.post("https://paste.ubuntu.com/", "poster=Bot&syntax=text&expiration=day&content=$message".toByteArray(Charsets.UTF_8), arrayOf("Content-Type", "application/x-www-form-urlencoded"), arrayOf("host", "paste.ubuntu.com"))!!.first.bufferedReader()
+        val reader = me.lovesasuna.lanzou.util.NetWorkUtil.post("https://paste.ubuntu.com/",
+            "poster=Bot&syntax=text&expiration=day&content=$message".toByteArray(Charsets.UTF_8),
+            arrayOf("Content-Type", "application/x-www-form-urlencoded"),
+            arrayOf("host", "paste.ubuntu.com")
+        )!!.second.bufferedReader()
         val builder = StringBuilder()
         reader.lines().skip(25).parallel().forEach {
             builder.append(it)
@@ -82,10 +59,15 @@ object BasicUtil {
     }
 
     fun getLocation(c: Class<*>): File {
-        return Paths.get(c.protectionDomain.codeSource.location.path.replaceFirst("/", "")).parent.toFile()
+        return if (System.getProperty("os.name").contains("windows", true)) {
+            Paths.get(c.protectionDomain.codeSource.location.path.replaceFirst("/", "")).parent.toFile()
+        } else {
+            Paths.get(c.protectionDomain.codeSource.location.path).parent.toFile()
+        }
     }
 
-//    fun getLocation(fileName: String): File {
-//        return File("${getLocation(Main::class.java).path}${File.separator}$fileName")
-//    }
+    fun getLocation(fileName: String): File {
+        return File("${getLocation(BotHelper::class.java).path}${File.separator}$fileName")
+    }
+
 }

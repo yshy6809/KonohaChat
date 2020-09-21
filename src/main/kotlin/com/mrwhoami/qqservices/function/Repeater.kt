@@ -78,10 +78,6 @@ class Repeater {
         )
             return
 
-
-
-
-
         // The message is already repeated
         if (buffer.repeated) {
             return

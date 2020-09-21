@@ -13,13 +13,14 @@ import net.mamoe.mirai.message.sendImage
 import java.io.File
 import java.io.FileReader
 import java.io.FileWriter
+import java.util.regex.Pattern
 import kotlin.random.Random
 
 
 class QuestionAnswer {
 
     init {
-        BotHelper.registerFunctions("人工智障聊天模式", listOf("蕾姆陪我聊天", "蕾姆来聊天", "结束人工智障模式：/退下吧"))
+        BotHelper.registerFunctions("人工智障聊天模式", listOf("香织陪我聊天", "香织来聊天", "结束人工智障模式：/退下吧"))
 
 
         val indexF = File(indexFilePath)
@@ -82,9 +83,9 @@ class QuestionAnswer {
 
     //设定bot名字，不同的叫法都可以触发
     private fun containsBotName(msgContent: String) : Boolean{
-        return msgContent.contains("蕾姆") || msgContent.contains("蕾姆酱") ||
-                msgContent.contains("レム") || msgContent.contains("レムちゃん") ||
-                msgContent.contains("rem")
+        return msgContent.contains("香织")|| msgContent.contains("香织铃") ||
+                msgContent.contains("kaori")|| msgContent.contains("kaorin") ||
+                msgContent.contains("かおり")|| msgContent.contains("かおりん")
     }
 
     private fun getPlainText(messageChain: MessageChain) : String? {
@@ -146,14 +147,13 @@ class QuestionAnswer {
                     && msgContent.endsWith("陪我聊天") ->{
                 turingOpen = true
                 grp.sendMessage("我来啦~")
-                println(turingOpen)
             }
 
             //包含关键字contains，完全相等contentEquals，前缀startsWith，后缀endsWith
             msgContent.contains("zaima") -> grp.sendMessage("buzai, GeiWoShuoZhongWen (　^ω^)")
             msgContent.contentEquals("老婆") -> {
-                val picture = this::class.java.getResource("/QuestionAnswer/？.jpg")
-                grp.sendImage(picture)
+//                val picture = this::class.java.getResource("/QuestionAnswer/？.jpg")
+//                grp.sendImage(picture)
             }
 
 //            msgContent.contains("测试") -> {
@@ -237,14 +237,14 @@ class QuestionAnswer {
             msgContent.contains("早上好") ||
                     msgContent.contains("おはよう") ||
                     msgContent.contains("早啊")-> {
-                val picture = this::class.java.getResource("/QuestionAnswer/morning.jpg")
-                grp.sendImage(picture)
+                //val picture = this::class.java.getResource("/QuestionAnswer/morning.jpg")
+                //grp.sendImage(picture)
 
                 if (BotHelper.memberIsAdmin(event.sender))
-                    grp.sendMessage("ごきげんよう、ご主人さま！今日も一日がんばってね～")
+                    grp.sendMessage("ごきげんよう、今日も一日がんばってね～")
 
                 else{
-                    grp.sendMessage("早上好，我的主人，今天也要元气满满哦！")
+                    grp.sendMessage("早上好，今天也要元气满满哦！")
                     grp.sendMessage(Face(Face.taiyang))
                 }
 
@@ -259,15 +259,19 @@ class QuestionAnswer {
             //白衣组专属复读
             (msgContent.endsWith("。。")  && !msgContent.endsWith("。。。"))//被哥哥复读，只能两个。。
                     ||msgContent.contains("喵喵喵")//
-//                    ||msgContent.contains("我一个死肥宅")//群现充睁眼说瞎话复读
-//                    ||msgContent.contains("我一个废物")//群大佬睁眼说瞎话复读
+                    ||msgContent.contains("群里只剩")//群大佬睁眼说瞎话复读
+                    ||msgContent.contains("生日快乐")//
                     ||msgContent.contains("yyds") || msgContent.contains("永远滴神") //永远滴神复读
                     ||msgContent.startsWith("不愧是")//不愧是复读
                     ||msgContent.startsWith("是，是")//是，是大佬复读
-                    ||msgContent.contentEquals("？")//？你有问题复读
+                    //||msgContent.contentEquals("？")//？你有问题复读
                     ||msgContent.contentEquals("草")//草复读
+                    ||msgContent.contentEquals("惹")//eva大佬专属复读
+                    ||msgContent.contentEquals("好")//好好怪复读
+                    ||msgContent.contentEquals("我好了")//好好怪复读
                     ||msgContent.endsWith("！！！")//猫村专属复读
                     ||(msgContent.startsWith("“")  && msgContent.endsWith("”"))//都教授引用式复读
+                    ||Pattern.matches(". . . .", msgContent)//阴 阳 怪 气
             -> {
 
                 //下面的代码是解决：短时间内多人发送了关键词，或者大家在复读关键词时，如何保证bot只复读一次
@@ -277,8 +281,6 @@ class QuestionAnswer {
                 {
                     //群里可能出现，一句话能被断断续续的复读多次，其中时间间隔特别长的情况，于是不能用时间作为标准
                     //应该还是以互异性为准，保证过了这波复读之后再纳入新的句子
-                    println(msgContent_Copy)
-                    println(repeat)
                     if(repeat.size>=2  && msgContent_Copy != "")//如果纳入了新的 含关键字的句子，说明上一句已经没用了，可以将其去掉
                         repeat.remove(msgContent_Copy)
 
@@ -287,12 +289,20 @@ class QuestionAnswer {
                     msgContent_Copy = msgContent
 
                 }
-
-
             }
 
             msgContent.contains("狒狒")-> {
-                grp.sendMessage("没有狒狒")
+                if(Random.nextInt(10) >= 3)
+                    grp.sendMessage("没有狒狒")
+                else
+                    grp.sendMessage("ff14，yyds")
+            }
+            msgContent.contentEquals("娇娇姐")-> {
+                grp.sendMessage("别看管人了")
+            }
+
+            msgContent.endsWith("+1")-> {
+                grp.sendMessage(msgContent.replace("+1","+2"))
             }
 
 
@@ -309,10 +319,10 @@ class QuestionAnswer {
 
             }
 
-            msgContent.contains("蕾姆叫叫他")->{
+            msgContent.contains("香织叫叫他")->{
                 val targetId = event.message[At]!!.target
                 val target = event.group[targetId]
-                grp.sendMessage(target.at() + "主人叫你")
+                grp.sendMessage(target.at() + "大人叫你")
 
             }
             msgContent.contains("解禁")->{
@@ -322,10 +332,10 @@ class QuestionAnswer {
                 val target = event.group[targetId]
                 if (grp.botPermission.isOperator()){
                     target.unmute()
-                    grp.sendMessage("以主人的仁慈，赐予你爱与温柔")
+                    grp.sendMessage("赐予你爱与温柔")
                 }
                 else
-                    grp.sendMessage("我还不是管理员，臣妾做不到呀")
+                    grp.sendMessage("我还不是管理员。。")
 
 
             }
@@ -339,7 +349,7 @@ class QuestionAnswer {
             //主动被禁言
             msgContent == "给我精致睡眠" -> {
                 if(BotHelper.memberIsAdmin(event.sender))
-                    grp.sendMessage("ゆめの中でお会いしましょう、ご主人さま(❁´◡`❁)")
+                    grp.sendMessage("ゆめの中でお会いしましょう(❁´◡`❁)")
                 else
                 {
                     if (grp.botPermission.isOperator())
@@ -356,15 +366,15 @@ class QuestionAnswer {
                     || msgContent.contains("晚安")
                     || msgContent.contains("睡了")
             -> {
-                val num = Random.nextInt(1, 3 + 1)//左开右闭区间
-                val PicNmae = "/QuestionAnswer/goodNight"+num+".jpg"
-                val picture = this::class.java.getResource(PicNmae)
-                grp.sendImage(picture)
+//                val num = Random.nextInt(1, 3 + 1)//左开右闭区间
+//                val PicNmae = "/QuestionAnswer/goodNight"+num+".jpg"
+//                val picture = this::class.java.getResource(PicNmae)
+//                grp.sendImage(picture)
                 if (BotHelper.memberIsAdmin(event.sender))
-                    grp.sendMessage("お休みなさい～、ご主人さま、いいゆめを")
+                    grp.sendMessage("お休みなさい～、いいゆめを")
 
                 else
-                    grp.sendMessage("晚安，主人，祝你好梦" + Face(5))
+                    grp.sendMessage("晚安，祝你好梦" + Face(5))
 
                 //无论是谁都会被禁言
                 if (grp.botPermission.isOperator())
@@ -374,33 +384,33 @@ class QuestionAnswer {
 
             containsBotName(msgContent) && msgContent.contains("爬") -> {
                 if (BotHelper.memberIsAdmin(event.sender)) {
-                    val num = Random.nextInt(1, 2 + 1)//左开右闭区间
-                    val PicNmae = "/QuestionAnswer/naku"+num+".jpg"
-                    val picture = this::class.java.getResource(PicNmae)
-                    grp.sendImage(picture)
+                    //val num = Random.nextInt(1, 2 + 1)//左开右闭区间
+//                    val PicNmae = "/QuestionAnswer/naku"+num+".jpg"
+//                    val picture = this::class.java.getResource(PicNmae)
+//                    grp.sendImage(picture)
                     grp.sendMessage("呜呜呜，不要欺负我( TдT)")
                 } else {
                     if (grp.botPermission.isOperator()) {
                         event.sender.mute(Random.nextInt(1, 120) * 60)
                     }
-                    val picture = this::class.java.getResource("/QuestionAnswer/zhazha.jpg")
-                    grp.sendImage(picture)
+//                    val picture = this::class.java.getResource("/QuestionAnswer/zhazha.jpg")
+//                    grp.sendImage(picture)
                     grp.sendMessage("谁爬还不一定呢")//你爬( `д´)
                 }
             }
             containsBotName(msgContent) && msgContent.contains("傻") -> {
                 if (BotHelper.memberIsAdmin(event.sender)) {
-                    val num = Random.nextInt(1, 2 + 1)//左开右闭区间
-                    val PicNmae = "/QuestionAnswer/naku"+num+".jpg"
-                    val picture = this::class.java.getResource(PicNmae)
-                    grp.sendImage(picture)
+//                    val num = Random.nextInt(1, 2 + 1)//左开右闭区间
+//                    val PicNmae = "/QuestionAnswer/naku"+num+".jpg"
+//                    val picture = this::class.java.getResource(PicNmae)
+//                    grp.sendImage(picture)
                     grp.sendMessage("人家才不傻！(>д<)")
                 } else {
                     if (grp.botPermission.isOperator()) {
                         event.sender.mute(Random.nextInt(1, 120) * 60)
                     }
-                    val picture = this::class.java.getResource("/QuestionAnswer/gun.jpg")
-                    grp.sendImage(picture)
+                    //val picture = this::class.java.getResource("/QuestionAnswer/gun.jpg")
+                    //grp.sendImage(picture)
                     grp.sendMessage("一边凉去( `д´)")
                 }
 
@@ -408,8 +418,8 @@ class QuestionAnswer {
             }
 
             containsBotName(msgContent) && msgContent.contains("萌")  -> {
-                val picture = this::class.java.getResource("/QuestionAnswer/nya.jpg")
-                grp.sendImage(picture)
+//                val picture = this::class.java.getResource("/QuestionAnswer/nya.jpg")
+//                grp.sendImage(picture)
             }
 
             containsBotName(msgContent) &&
@@ -418,56 +428,56 @@ class QuestionAnswer {
                     || msgContent.contains("好看")
                             || msgContent.contains("天使"))  -> {
 
-                val num = Random.nextInt(1, 5 + 1)//左开右闭区间
-                val PicNmae = "/QuestionAnswer/happy"+num+".jpg"
+//                val num = Random.nextInt(1, 5 + 1)//左开右闭区间
+//                val PicNmae = "/QuestionAnswer/happy"+num+".jpg"
 
-                val picture = this::class.java.getResource(PicNmae)
-                grp.sendImage(picture)
+                //val picture = this::class.java.getResource(PicNmae)
+                //grp.sendImage(picture)
                 grp.sendMessage("欸嘿~(*ﾟ∀ﾟ*)")
             }
 
 
             containsBotName(msgContent) && msgContent.contains("出来")  -> {
-                try {
+//                try {
+//
+//                    var num = Random.nextInt(1, 11 + 1)
+//                    var IndexStr = ""
+//
+//                    IndexStr = "/QuestionAnswer/deru$num.jpg"
+//
+//                    val picture = this::class.java.getResource(IndexStr)
+//                    try {
+//                        grp.sendImage(picture)
+//                    } catch (e: Exception) {
+//                        System.err.println(num)
+//                        System.err.println(IndexStr)
+//                    }
+//                } catch (e: Exception) {
+//                    e.printStackTrace()
+//                }
 
-                    var num = Random.nextInt(1, 11 + 1)
-                    var IndexStr = ""
-
-                    IndexStr = "/QuestionAnswer/deru$num.jpg"
-
-                    val picture = this::class.java.getResource(IndexStr)
-                    try {
-                        grp.sendImage(picture)
-                    } catch (e: Exception) {
-                        System.err.println(num)
-                        System.err.println(IndexStr)
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-
-                grp.sendMessage("主人主人我来了")
+                grp.sendMessage("我～来～了")
             }
 
             containsBotName(msgContent) && (msgContent.contains("亲亲") ||
                                             msgContent.contains("啾啾") ||
                                             msgContent.contains("mua")) -> {
                 if (BotHelper.memberIsAdmin(event.sender)) {
-                    val picture = this::class.java.getResource("/QuestionAnswer/love1.jpg")
-                    grp.sendImage(picture)
-                    grp.sendMessage("ご主人さま、愛してるよ")
+//                    val picture = this::class.java.getResource("/QuestionAnswer/love1.jpg")
+//                    grp.sendImage(picture)
+                    grp.sendMessage("愛してるよ")
                 }
                 else {
-                    val picture = this::class.java.getResource("/QuestionAnswer/love1.jpg")
-                    grp.sendImage(picture)
+//                    val picture = this::class.java.getResource("/QuestionAnswer/love1.jpg")
+//                    grp.sendImage(picture)
                     grp.sendMessage("人家害羞嘛")//不要啾啾我⊂彡☆))∀`)
                 }
             }
             containsBotName(msgContent) && (msgContent.contains("日我") ||
                                             msgContent.contains("上我") ||
                                             msgContent.contains("曰我")) -> {
-                val picture = this::class.java.getResource("/QuestionAnswer/？.jpg")
-                grp.sendImage(picture)
+//                val picture = this::class.java.getResource("/QuestionAnswer/？.jpg")
+//                grp.sendImage(picture)
                 grp.sendMessage("你不对劲，你有问题，你快点爬(`ヮ´ )")
                 if (grp.botPermission.isOperator()) {
                     event.sender.mute(Random.nextInt(1, 120) * 60)
@@ -484,10 +494,9 @@ class QuestionAnswer {
             }
 
             msgContent.contentEquals("自我介绍") -> {
-                grp.sendMessage("我是，四年级学生……")
-                grp.sendMessage("不好意思走错片场了")
+
                 grp.sendMessage(
-                    "我是基于Mirai开发的人工智障群聊bot，不会做饭，只会水群，无情复读姬。" +
+                    "我是由心葉大人基于Mirai开发的白衣群御用人工智障群聊bot，不会做饭，只会水群，无情复读姬。" +
                             "发送给功能列表可以查看我能干什么，现在还很弱鸡，但是未来可期。（只要有大佬一起码代码的话:" +
                             "https://github.com/KonohaVio/KonohaChat"
                 )
@@ -498,7 +507,7 @@ class QuestionAnswer {
             containsBotName(msgContent) -> {
                 val answers = listOf(
                     "お呼びでしょうか",
-                    "主人，您是在叫我么？",
+                    "您是在叫我么？",
                     "是在说我可爱嘛～",
                     "我来了～～",
                     "呼んだ？",

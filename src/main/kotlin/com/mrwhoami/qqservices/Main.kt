@@ -1,6 +1,12 @@
 package com.mrwhoami.qqservices
 
+
+import com.fasterxml.jackson.databind.PropertyNamingStrategy
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.mrwhoami.qqservices.data.BotData
+import com.mrwhoami.qqservices.file.Config
 import com.mrwhoami.qqservices.function.*
+import com.mrwhoami.qqservices.util.FileManager
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -14,6 +20,8 @@ import net.mamoe.mirai.event.subscribeAlways
 import net.mamoe.mirai.message.GroupMessageEvent
 import net.mamoe.mirai.message.data.*
 import net.mamoe.mirai.message.sendImage
+import net.mamoe.mirai.utils.BotConfiguration
+import java.lang.management.ManagementFactory
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.random.Random
@@ -23,11 +31,27 @@ private val logger = KotlinLogging.logger {}
 
 suspend fun main() {
     // Login QQ. Use another data class to avoid password tracking.
-    val login = BotInitInfo()
-    val miraiBot = Bot(login.botQQId, login.botQQPassword) {
+    //val login = BotInitInfo()//login.botQQId
+
+    val runtimeMX = ManagementFactory.getRuntimeMXBean()
+    val osMX = ManagementFactory.getOperatingSystemMXBean()
+    if (runtimeMX != null && osMX != null) {
+        val javaInfo = "Java " + runtimeMX.specVersion + " (" + runtimeMX.vmName + " " + runtimeMX.vmVersion + ")"
+        val osInfo = "Host: " + osMX.name + " " + osMX.version + " (" + osMX.arch + ")"
+        println("System Info: $javaInfo $osInfo")
+    } else {
+        println("Unable to read system info")
+    }
+
+    BotData.objectMapper = jacksonObjectMapper().also { it.propertyNamingStrategy = PropertyNamingStrategy.LOWER_CASE }
+    BotHelper.botConfig = BotConfiguration.Default.also {
+        it.randomDeviceInfo()
+    }
+    FileManager.readValue()
+    val miraiBot = Bot(Config.data.account, Config.data.password) {
         fileBasedDeviceInfo("device.json")
     }.alsoLogin()
-    logger.info { "${login.botQQId} is logged in." }
+    logger.info { "${Config.data.account} is logged in." }
 
 
     // Initialize helper
@@ -134,6 +158,5 @@ suspend fun main() {
 
     //这个很关键，千万不能删！
     miraiBot.join() // 等待 Bot 离线, 避免主线程退出
-    
 
 }

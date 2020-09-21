@@ -20,12 +20,17 @@ repositories {
 
 dependencies {
     compile 'io.github.microutils:kotlin-logging:1.8.3'
-    compile 'net.mamoe:mirai-core-qqandroid:1.1.3'
-    compile 'net.mamoe:mirai-serialization:1.1.3'
+
+    //compileOnly 'net.mamoe:mirai-core-qqandroid:' + project('CustomCore').version
+    compile 'net.mamoe:mirai-core-qqandroid:1.3.0'
+    //implementation "net.mamoe:mirai-core-qqandroid:VERSION"
+    //compile 'net.mamoe:mirai-serialization:1.1.3'
+
     compile "org.jetbrains.kotlin:kotlin-stdlib"
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
     compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.29'
     compile 'com.beust:klaxon:5.0.1'
+    implementation "com.fasterxml.jackson.module:jackson-module-kotlin:2.11.2"
 
     compile group: 'net.dreamlu', name: 'mica-core', version: '2.0.6-GA'
     // https://mvnrepository.com/artifact/net.dreamlu/mica-http

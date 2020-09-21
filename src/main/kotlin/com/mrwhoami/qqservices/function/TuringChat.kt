@@ -7,9 +7,6 @@ import java.util.Scanner
 
 
 object TuringChat {
-    init {
-        BotHelper.registerFunctions("图灵", listOf("蕾姆陪我聊天"))
-    }
 
     @JvmStatic
     fun main(args: Array<String>) {
@@ -27,8 +24,8 @@ object TuringChat {
             //获得text键的内容，并转化为string
             val back = json["text"].toString()
 
-            //打印结果
-            println(back)
+            //打印结果，检查语句
+            //println(back)
         }
 
     }

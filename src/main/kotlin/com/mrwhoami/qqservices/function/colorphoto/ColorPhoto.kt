@@ -21,7 +21,7 @@ class ColorPhoto : FunctionListener {
     var pixiv = true
     init{
         BotHelper.registerFunctions("涩图", listOf("/涩图+空格"))
-        BotHelper.registerFunctions("百合涩图", listOf("/百合涩图"))
+        BotHelper.registerFunctions("百合", listOf("/百合"))
     }
     override suspend fun execute(event: MessageEvent, message: String, image: Image?, face: Face?): Boolean {
         //val bannotice = { event.reply("该图源已被禁用！") }

@@ -1,11 +1,10 @@
 package com.mrwhoami.qqservices.function
 
-
-
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import com.mrwhoami.qqservices.data.BotData
 import com.mrwhoami.qqservices.util.BasicUtil
 import com.mrwhoami.qqservices.util.pictureSearchUtil.Ascii2d
 import com.mrwhoami.qqservices.util.interfaces.FunctionListener
-import com.mrwhoami.qqservices.util.network.NetWorkUtil
 import com.mrwhoami.qqservices.util.pictureSearchUtil.Saucenao
 import net.mamoe.mirai.contact.Member
 import net.mamoe.mirai.message.MessageEvent
@@ -14,42 +13,63 @@ import java.lang.StringBuilder
 
 class PictureSearch : FunctionListener {
     init{
-        BotHelper.registerFunctions("P站搜图", listOf("/搜图+空格"))
+        BotHelper.registerFunctions("一言", listOf("/一言"))
     }
-    private val map = HashMap<Long, Int>()
+    private val idSet = HashSet<Long>()
 
+    @ExperimentalCoroutinesApi
     override suspend fun execute(event: MessageEvent, message: String, image: Image?, face: Face?): Boolean {
         val senderID = event.sender.id
-        if (message.startsWith("/搜图 ") && !map.contains(senderID)) {
-            map[senderID] = BasicUtil.ExtraceInt(message.split(" ")[1], 1)
-            event.reply(At(event.sender as Member) + "请发送图片")
+        val at = At(event.sender as Member)
+        if (message.startsWith("/搜图") && !idSet.contains(senderID)) {
+            idSet.add(senderID)
+            event.reply(at + "请发送图片")
         }
 
-        if (map[senderID] != null && image != null) {
-            val source = when (map[senderID]) {
-                1 -> {
-                    event.reply(At(event.sender as Member) + "Saucenao查找中!")
-                    Saucenao
-                }
-                2 -> {
-                    event.reply(At(event.sender as Member) + "Ascii2d查找中!")
-                    Ascii2d
-                }
-                else -> Saucenao
-            }
-            val results = source.search(image.queryUrl())
+        if (idSet.contains(senderID) && image != null) {
+
+            idSet.remove(senderID)
+            event.reply(at + "Saucenao查找中!")
+            val imgUrl = image.queryUrl()
+            if (BotData.debug) event.reply("图片URL: $imgUrl")
+            var results = Saucenao.search(imgUrl)//先搜这个
             if (results.isEmpty()) {
-                event.reply("未查找到结果!")
-                map.remove(senderID)
-                return true
+                results = Ascii2d.search(imgUrl)//再搜备用图源
+                if(results.isEmpty())
+                {
+                    event.reply("肥肠抱歉，未查找到结果..")
+                    return true
+                }
             }
-            map.remove(senderID)
-            results.forEach {
+            //event.reply("搜索完成!")
+            if (BotData.debug) event.reply(results.toString())
+            results.forEach { result ->
                 val builder = StringBuilder()
-                it.extUrls.forEach {
+                result.extUrls.forEach {
                     builder.append(it).append("\n")
                 }
-                event.reply(event.uploadImage(NetWorkUtil.get(it.thumbnail)!!.first) as Message + PlainText("\n相似度: ${it.similarity} \n画师名: ${it.memberName} \n相关链接: \n${builder.toString().replace(Regex("\n$"), "")}"))
+                BotHelper.scheduler.withTimeOut(suspend {
+                    val uploadImage =
+                        event.uploadImage(me.lovesasuna.lanzou.util.NetWorkUtil.get(result.thumbnail)!!.second) as Message
+                    event.reply(
+                        uploadImage + PlainText(
+                            "\n相似度: ${result.similarity} \n画师名: ${result.memberName} \n相关链接: \n${
+                                builder.toString().replace(Regex("\n$"), "")
+                            }"
+                        )
+                    )
+                    uploadImage
+                }, 7500) {
+                    event.reply("缩略图上传超时")
+                    event.reply(
+                        PlainText(
+                            "空图像(上传失败)\n相似度: ${result.similarity} \n画师名: ${result.memberName} \n相关链接: \n${
+                                builder.toString().replace(Regex("\n$"), "")
+                            }"
+                        )
+                    )
+                }
+
             }
         }
         return true

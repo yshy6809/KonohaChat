@@ -18,8 +18,13 @@ object Saucenao : PictureSearchSource{
                 val similarity = result["header"]["similarity"].asInt()
                 if (similarity < 57.5) continue
                 val extUrlsList = ArrayList<String>()
-                repeat(result["data"]["ext_urls"].size()) {
-                    extUrlsList.add(result["data"]["ext_urls"][it].asText())
+                try {
+                    repeat(result["data"]["ext_urls"].size()) {
+                        extUrlsList.add(result["data"]["ext_urls"][it].asText())
+                    }
+                } catch (e: Exception) {
+                    println(result)
+                    e.printStackTrace()
                 }
                 if (!extUrlsList.parallelStream().anyMatch { it.contains("pixiv") }) continue
                 val thumbnail = result["header"]["thumbnail"].asText()

@@ -4,6 +4,7 @@ package com.mrwhoami.qqservices
 import com.mrwhoami.qqservices.function.*
 import com.mrwhoami.qqservices.function.colorphoto.ColorPhoto
 import net.mamoe.mirai.Bot
+import net.mamoe.mirai.contact.isOperator
 import net.mamoe.mirai.event.*
 import net.mamoe.mirai.message.*
 import net.mamoe.mirai.message.data.*
@@ -35,6 +36,7 @@ fun Bot.messageDSL(){
 //这里提供了和QuestionAnswer稍微不一样的回复方式，具体请ctrl+左键点击那些函数的定义查看细节
 //为什么会这么多种方式混杂，因为这个bot就是四处找文档，东一段西一段学出来的（我太菜了
     this.subscribeMessages{
+        //this是event
 
         var RePicFlag = false//复读图片的开关
 
@@ -55,6 +57,9 @@ fun Bot.messageDSL(){
             RePicFlag = false
             reply("成功取消图片复读"+RePicFlag)
         }
+
+
+
 
 
         //如果消息包含以下类型，如Image
@@ -88,4 +93,73 @@ fun Bot.messageDSL(){
 //        }
 
     }
+    subscribeGroupMessages{
+
+        startsWith("群名=") {
+            if (!sender.isOperator()) {
+                sender.mute(5)
+                return@startsWith
+            }
+            else
+                group.name = it
+        }
+        startsWith("/改名") {
+            if (!BotHelper.memberIsAdmin(sender)) {
+                sender.mute(5)
+                Face(Face.qiaoda).plus("大胆！")?.let { it1 -> reply(it1) }
+            }
+            if(!this.group.botPermission.isOperator())
+            {
+                reply("我还不是管理员，爱莫能助")
+            }
+            else
+            {
+                reply("主人请艾特一位幸运儿")
+                var atBy: At? = nextMessage { message.any(At) }[At]
+                var theMember = atBy?.asMember()
+
+                if(this.message.contentEquals("/改名++"))//改群名片＋改群头衔
+                {
+                    reply("请主人赐予它新的乌纱帽")
+                    var nextMes = nextMessage()
+                    var buffer = ""
+                    for (msg in nextMes) {
+                        if (msg.isContentEmpty()) continue
+                        else if (msg.isPlain()) {
+                            buffer += msg.content
+                        } else continue
+                    }
+                    var megText :String? = ""
+                    if (!buffer.isEmpty())
+                    {
+                        megText = buffer
+                        println(megText)
+                        theMember?.specialTitle = megText
+                    }
+                }
+
+                reply("以后叫ta什么？")
+                var nextMes = nextMessage()
+                var buffer = ""
+                for (msg in nextMes) {
+                    if (msg.isContentEmpty()) continue
+                    else if (msg.isPlain()) {
+                        buffer += msg.content
+                    } else continue
+                }
+                var megText :String? = ""
+                if (!buffer.isEmpty())
+                {
+                    megText = buffer
+                    println(megText)
+                    theMember?.nameCard = megText
+                    theMember?.at()?.plus(",你好呀")?.let { it1 -> reply(it1) }
+
+                }
+
+            }
+
+        }
+    }
 }
+

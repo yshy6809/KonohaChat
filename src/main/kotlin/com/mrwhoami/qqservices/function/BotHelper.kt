@@ -1,12 +1,25 @@
 package com.mrwhoami.qqservices.function
 
+import com.mrwhoami.qqservices.util.BasicUtil
 import mu.KotlinLogging
 import net.mamoe.mirai.contact.Member
 import net.mamoe.mirai.contact.isAdministrator
 import net.mamoe.mirai.contact.isOwner
+import com.mrwhoami.qqservices.util.plugin.PluginScheduler
+import net.mamoe.mirai.utils.BotConfiguration
+import java.io.File
+import java.nio.file.Files
+import java.nio.file.Paths
 
 class BotHelper {
     companion object {
+
+        lateinit var botConfig: BotConfiguration
+        val scheduler = PluginScheduler()
+        val dataFolder = File("${BasicUtil.getLocation(BotHelper.javaClass).path}${File.separator}Bot")
+            .also { if (!it.exists()) Files.createDirectories(Paths.get(it.toURI())) }
+
+
         private val logger = KotlinLogging.logger {}
         // Set up a bot owner using res/owner.txt
         private var botOwner : Long? = null

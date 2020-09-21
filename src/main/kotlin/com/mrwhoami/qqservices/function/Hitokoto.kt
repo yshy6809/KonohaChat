@@ -26,7 +26,6 @@ class Hitokoto : FunctionListener {
             /*如果不带参数,默认全部获取*/
             if (strings.size == 1) {
                 val inputStream = NetWorkUtil.get("https://v1.hitokoto.cn/")?.first
-                println(inputStream)
                 if (inputStream == null) {
                     return false
                 }

@@ -1,4 +1,4 @@
 D:
-cd D:\IDM Download\KonohaChat
+cd D:\IDM Download\SDDDBotServices-master
 gradle run
 pause
