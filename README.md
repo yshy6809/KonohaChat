@@ -1,5 +1,5 @@
 # Konoha Bot Service
-to Sakura大佬：删了又重新建了一个，由于项目名字一样，所以域名也没有变，还是这个网页（被自己蠢哭）。多谢大佬捉虫
+优化：更新了Mirai的core版本，目前是1.3.0。它优化了上传带宽。此次优化了搜图和百科的反馈，生成了独立config文件。第一次运行的时候会显示没有账号，只要找到config文件填入代码即可。
 
 ![Kotlin CI with Gradle](https://github.com/MrWhoami/SDDDBotServices/workflows/Kotlin%20CI%20with%20Gradle/badge.svg?branch=master)
 
@@ -63,9 +63,7 @@ QuestionAnswer有图灵机器人等
 依赖：build.gradle文件里写了很多依赖，可能要下挺久的。
 另外，目录下的build文件夹下的；libs文件夹里也有一些包，都是依赖包
 
-启动前的工作：到com.mrwhoami.qqservices.function的BotInitInfo这个文件里填入qqID和password
-QuestionAnswer文件的第24行，也有需要填qq群号的（别问为何没有独立的config文件，问就是菜
-
+【第一次运行会显示没有账号，这是在生成config文件，然后再到该文件，填入账号即可正常运行】
 启动方式：调试代码时：idea正常运行就行。
 要长时间挂着bot时，一般是放某个盘，然后利用cmd命令行，到代码所在目录，运行gradle run
 或者gradle release打包成jar包，再java -jar xxx.jar运行。
