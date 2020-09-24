@@ -257,7 +257,7 @@ class QuestionAnswer {
 //            }
 
             //白衣组专属复读
-            (msgContent.endsWith("。。")  && !msgContent.endsWith("。。。"))//被哥哥复读，只能两个。。
+            (msgContent.endsWith("。。")  && !msgContent.endsWith("。。。"))//只能两个。。
                     ||msgContent.contains("喵喵喵")//
                     ||msgContent.contains("群里只剩")//群大佬睁眼说瞎话复读
                     ||msgContent.contains("生日快乐")//
@@ -266,11 +266,11 @@ class QuestionAnswer {
                     ||msgContent.startsWith("是，是")//是，是大佬复读
                     //||msgContent.contentEquals("？")//？你有问题复读
                     ||msgContent.contentEquals("草")//草复读
-                    ||msgContent.contentEquals("惹")//eva大佬专属复读
+                    ||msgContent.contentEquals("惹")//
                     ||msgContent.contentEquals("好")//好好怪复读
                     ||msgContent.contentEquals("我好了")//好好怪复读
-                    ||msgContent.endsWith("！！！")//猫村专属复读
-                    ||(msgContent.startsWith("“")  && msgContent.endsWith("”"))//都教授引用式复读
+                    ||msgContent.endsWith("！！！")//
+                    ||(msgContent.startsWith("“")  && msgContent.endsWith("”"))//
                     ||Pattern.matches(". . . .", msgContent)//阴 阳 怪 气
             -> {
 
@@ -291,19 +291,7 @@ class QuestionAnswer {
                 }
             }
 
-            msgContent.contains("狒狒")-> {
-                if(Random.nextInt(10) >= 3)
-                    grp.sendMessage("没有狒狒")
-                else
-                    grp.sendMessage("ff14，yyds")
-            }
-            msgContent.contentEquals("娇娇姐")-> {
-                grp.sendMessage("别看管人了")
-            }
-
-            msgContent.endsWith("+1")-> {
-                grp.sendMessage(msgContent.replace("+1","+2"))
-            }
+          
 
 
             msgContent.contains("傻逼")
@@ -496,7 +484,7 @@ class QuestionAnswer {
             msgContent.contentEquals("自我介绍") -> {
 
                 grp.sendMessage(
-                    "我是由心葉大人基于Mirai开发的白衣群御用人工智障群聊bot，不会做饭，只会水群，无情复读姬。" +
+                    "我是基于Mirai开发的白衣群御用人工智障群聊bot，不会做饭，只会水群，无情复读姬。" +
                             "发送给功能列表可以查看我能干什么，现在还很弱鸡，但是未来可期。（只要有大佬一起码代码的话:" +
                             "https://github.com/KonohaVio/KonohaChat"
                 )
